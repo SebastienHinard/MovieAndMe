@@ -35,7 +35,6 @@ export function getMovieDetailFromApi (id) {
         .catch((error) => console.error(error));
 }
 
-
 /**
  * PERMET LA RECUPERATION DE L'IMAGE D'UN FILM
  * @param name

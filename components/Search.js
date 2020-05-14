@@ -2,8 +2,9 @@ import React from 'react'
 import {StyleSheet, View, TextInput, Button, FlatList, ActivityIndicator, Keyboard} from 'react-native'
 import MovieItem from './MovieItem'
 import {getFilmsFromApiWithSearchedText} from "../API/TMDBApi";
+import {connect} from "react-redux";
 
-export default class Search extends React.Component {
+class Search extends React.Component {
     constructor(props) {
         super(props);
         this.searchedText = ""
@@ -75,10 +76,12 @@ export default class Search extends React.Component {
                 <FlatList
                     style={styles.list}
                     data = {this.state.movies}
+                    extraData = {this.props.favoriteMovie}
                     keyExtractor = { (item) => item.id.toString() }
                     renderItem = { ({item}) => (
                         <MovieItem
                             movie={item}
+                            isFavorite = { this.props.favoriteMovie.findIndex(movie => movie.id === item.id) !== -1 }
                             displayMovieDetail = {this._displayMovieDetail}
                         />
                     )}
@@ -94,6 +97,17 @@ export default class Search extends React.Component {
         )
     }
 }
+
+/**
+ * REDUX CONNECTION AND EXPORT
+ */
+const mapStateToProps = (state) => {
+    return {
+        favoriteMovie: state.favoriteMovie
+    }
+}
+export default connect(mapStateToProps)(Search)
+
 
 const styles = StyleSheet.create({
     mainContainer: {

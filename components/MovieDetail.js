@@ -48,9 +48,8 @@ class MovieDetail extends React.Component {
     }
 
     render() {
-        console.log(this.props.favoriteMovie)
-
         const movie = this.state.movie
+        console.log(movie)
 
         return (
             <View style={styles.mainContainer}>
@@ -63,9 +62,8 @@ class MovieDetail extends React.Component {
                     /* MOVIE CONTENT */
                     <ScrollView>
                         <Image
-                            source={{ uri: getImageFromApi(movie.poster_path) }}
+                            source={{ uri: getImageFromApi(movie.backdrop_path) }}
                             style={styles.image}
-                            resizeMode={'contain'}
                         />
                         <Text style={styles.title}>{movie.title}</Text>
                         <Text style={styles.subtitle}>{movie.tagline}</Text>
