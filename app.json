@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "MoviesAndMe",
-    "slug": "MoviesAndMe",
+    "name": "My Movie App",
+    "slug": "MyMovieApp",
     "platforms": [
       "ios",
       "android",
