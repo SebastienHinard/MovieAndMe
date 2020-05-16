@@ -6,6 +6,7 @@ import {createBottomTabNavigator} from "react-navigation-tabs";
 import Search from "../components/Search";
 import MovieDetail from "../components/MovieDetail";
 import Favorites from "../components/Favorites";
+import TestView from "../components/TestView";
 
 const SearchStackNavigator = createStackNavigator({
    Search: {
@@ -15,17 +16,32 @@ const SearchStackNavigator = createStackNavigator({
        }
    },
    MovieDetail: {
-       screen: MovieDetail
+       screen: MovieDetail,
+       navigationOptions: {
+           title: "Détails du film"
+       }
    }
 });
 
 const FavoriteStackNavigator = createStackNavigator({
     Favoris: {
         screen: Favorites
+    },
+    MovieDetail: {
+        screen: MovieDetail,
+        navigationOptions: {
+            title: "Détails du film"
+        }
     }
 })
 
 const BottomTabNavigator = createBottomTabNavigator({
+    Test: {
+        screen: TestView,
+        navigationOptions: {
+            tabBarIcon: () => ( <Image source={require('../assets/ic_favorite_border.png')} style={styles.icon} /> )
+        }
+    },
     Rechercher: {
         screen: SearchStackNavigator,
         navigationOptions: {
@@ -40,8 +56,8 @@ const BottomTabNavigator = createBottomTabNavigator({
     }
 },{
     tabBarOptions: {
-        activeBackgroundColor: '#eee',
-        inactiveBackgroundColor: '#fff',
+        activeBackgroundColor: '#fff',
+        inactiveBackgroundColor: '#eee',
         showLabel: false,
         showIcon: true
     }

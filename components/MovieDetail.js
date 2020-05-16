@@ -1,5 +1,5 @@
 import React from 'react'
-import {StyleSheet, View, Text, ActivityIndicator, ScrollView, Image, Button, Linking, TouchableOpacity} from 'react-native'
+import {StyleSheet, View, Text, ActivityIndicator, ScrollView, Image, Linking, TouchableOpacity, Share, Platform} from 'react-native'
 import {getMovieDetailFromApi, getImageFromApi} from "../API/TMDBApi";
 import moment from "moment";
 import numeral from 'numeral'
@@ -18,13 +18,73 @@ class MovieDetail extends React.Component {
     }
 
     componentDidMount() {
-        getMovieDetailFromApi(this.props.navigation.getParam('movieID')).then( (data) => {
-                this.setState({
-                    movie: data,
-                    isLoading: false
-                })
-            }
+        const favoriteMovieIndex = this.props.favoriteMovie.findIndex(
+            item => item.id === this.props.navigation.getParam('movieID')
         )
+        // SI LE FILM EST DANS LES FAVORIS, ON RECUPERE SES INFOS DANS SES PROPS
+        if(favoriteMovieIndex !== -1) {
+            this.setState({
+                movie: this.props.favoriteMovie[favoriteMovieIndex],
+                isLoading: false
+            })
+        // SINON ON FAIT UN APPEL A L'API
+        } else {
+            getMovieDetailFromApi(this.props.navigation.getParam('movieID')).then( (data) => {
+                    this.setState({
+                        movie: data,
+                        isLoading: false
+                    })
+                }
+            )
+        }
+    }
+
+    _shareMovie = () => {
+        const {movie} = this.state
+        Share.share({
+            message: "Hey, je voudrais te faire découvrir ce film:\n"
+                    + movie.title
+                    + ( movie.overview.length > 0 && '\n' + movie.overview )
+
+        })
+    }
+
+    _displayFloatingActionButton = () => {
+        const {movie} = this.state
+        if(movie !== undefined) {
+            switch (Platform.OS) {
+                case 'android':
+                    return (
+                        <TouchableOpacity
+                            style={styles.share_touchable_floatingactionbutton}
+                            onPress={() => this._shareMovie()}>
+                            <Image
+                                style={styles.share_image}
+                                source={require('../assets/ic_share.png')} />
+                        </TouchableOpacity>
+                    )
+                case 'ios':
+                    return (
+                        <TouchableOpacity
+                            style={styles.share_touchable_floatingactionbutton}
+                            onPress={() => this._shareMovie()}>
+                            <Image
+                                style={styles.share_image}
+                                source={require('../assets/ic_share.png')} />
+                        </TouchableOpacity>
+                    )
+                default:
+                    return (
+                        <TouchableOpacity
+                            style={styles.share_touchable_floatingactionbutton}
+                            onPress={() => this._shareMovie()}>
+                            <Image
+                                style={styles.share_image}
+                                source={require('../assets/ic_share.png')} />
+                        </TouchableOpacity>
+                    )
+            }
+        }
     }
 
     _toggleFavorite() {
@@ -49,7 +109,6 @@ class MovieDetail extends React.Component {
 
     render() {
         const movie = this.state.movie
-        console.log(movie)
 
         return (
             <View style={styles.mainContainer}>
@@ -125,6 +184,7 @@ class MovieDetail extends React.Component {
                         </TouchableOpacity>
                     </ScrollView>
                 }
+                {this._displayFloatingActionButton()}
             </View>
         )
     }
@@ -211,5 +271,20 @@ const styles = StyleSheet.create({
     favoriteImage: {
         width: 40,
         height: 40
+    },
+    share_touchable_floatingactionbutton: {
+        position: 'absolute',
+        width: 60,
+        height: 60,
+        right: 30,
+        bottom: 30,
+        borderRadius: 30,
+        backgroundColor: '#e91e63',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    share_image: {
+        width: 30,
+        height: 30
     }
 })

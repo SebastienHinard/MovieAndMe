@@ -1,10 +1,9 @@
 import React from 'react'
 import {StyleSheet, View, TextInput, Button, FlatList, ActivityIndicator, Keyboard} from 'react-native'
-import MovieItem from './MovieItem'
 import {getFilmsFromApiWithSearchedText} from "../API/TMDBApi";
-import {connect} from "react-redux";
+import MovieList from "./MovieList";
 
-class Search extends React.Component {
+export default class Search extends React.Component {
     constructor(props) {
         super(props);
         this.searchedText = ""
@@ -16,7 +15,7 @@ class Search extends React.Component {
         }
     }
 
-    _searchMovies() {
+    _searchMovies = () => {
         Keyboard.dismiss()
         this.page = 0
         this.totalPages = 0
@@ -27,7 +26,7 @@ class Search extends React.Component {
         })
     }
 
-    _loadMovies() {
+    _loadMovies = () => {
         if(this.searchedText.length > 0) {
             this.setState({
                 isLoading: true
@@ -45,7 +44,7 @@ class Search extends React.Component {
         }
     }
 
-    _displayLoading() {
+    _displayLoading = () => {
         if(this.state.isLoading) {
             return (
                 <View style={styles.loadingContainer}>
@@ -53,10 +52,6 @@ class Search extends React.Component {
                 </View>
             )
         }
-    }
-
-    _displayMovieDetail = (movieID) => {
-        this.props.navigation.navigate('MovieDetail', {movieID: movieID})
     }
 
     render() {
@@ -73,40 +68,19 @@ class Search extends React.Component {
                     title="Rechercher"
                     onPress={() => this._searchMovies()}
                 />
-                <FlatList
-                    style={styles.list}
-                    data = {this.state.movies}
-                    extraData = {this.props.favoriteMovie}
-                    keyExtractor = { (item) => item.id.toString() }
-                    renderItem = { ({item}) => (
-                        <MovieItem
-                            movie={item}
-                            isFavorite = { this.props.favoriteMovie.findIndex(movie => movie.id === item.id) !== -1 }
-                            displayMovieDetail = {this._displayMovieDetail}
-                        />
-                    )}
-                    onReachEndThreshold={1}
-                    onEndReached = {() => {
-                        if(this.page < this.totalPages) {
-                            this._loadMovies()
-                        }
-                    }}
+                <MovieList
+                    movies={this.state.movies}
+                    navigation={this.props.navigation}
+                    loadMovies={this._loadMovies}
+                    page={this.page}
+                    totalPages={this.totalPages}
+                    isFavoriteList={false}
                 />
                 {this._displayLoading()}
             </View>
         )
     }
 }
-
-/**
- * REDUX CONNECTION AND EXPORT
- */
-const mapStateToProps = (state) => {
-    return {
-        favoriteMovie: state.favoriteMovie
-    }
-}
-export default connect(mapStateToProps)(Search)
 
 
 const styles = StyleSheet.create({
@@ -121,10 +95,6 @@ const styles = StyleSheet.create({
         padding: 4,
         marginBottom: 4,
         backgroundColor: '#fff'
-    },
-    list : {
-        marginTop: 10,
-        flex: 1
     },
     loadingContainer: {
         position: 'absolute',
